@@ -14,6 +14,15 @@
 use std::io;
 
 fn main() {
+    /*
+    To illustrate borow error and difference between borrow and reference
+    // let mut s = String::new();
+    // let s1 = &mut s;
+    // let s2 = &mut s;
+    // random_fn(&mut s);
+    // println!("{} {}", s1,s2);
+    */
+
     println!("Enter youe Earth weight in kg: ");
     let mut input = String::new();
     io::stdin().read_line(&mut input).unwrap();
@@ -25,3 +34,7 @@ fn main() {
 fn calc_weight_on_mars(weight:f64) -> f64 {
     (weight / 9.81) * 3.711
 }
+
+// fn random_fn(s: &mut String){
+//     s.push_str("Hello");
+// }
