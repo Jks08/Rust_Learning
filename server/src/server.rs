@@ -15,8 +15,15 @@ impl Server{
     }
     // run takes ownership of entire struct. 
     // If we pass in &mut self, it won't take ownership.
-    pub fn run(self){
+    pub fn run(self) -> (i32, &str, std::net::TcpListener){
         println!("Listening on {}", self.addr);
         let listener = TcpListener::bind(&self.addr).unwrap(); // recoverable error 
+
+        // while true{} // Normal infinite loop, but Rust has the following special:
+        loop{
+            listener.accept();
+        }
+        // let tup = (5,"a",listener);
+        (5,"a",listener)
     }
 }
