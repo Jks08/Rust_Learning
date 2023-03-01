@@ -1,3 +1,12 @@
+use server::Server;
+// use http::request::Request;
+// use http::method::Method;
+use http::Method;
+use http::Request;
+
+mod server; // To import from other file: server.rs
+mod http;
+
 fn main() {
     // let get = Method::GET;
     // let delete = Method::DELETE;
@@ -19,42 +28,53 @@ fn main() {
     // dbg!(&string2);
 }
 
-// Struct block
-struct Server{
-    addr: String,
-}
+// mod server{
+//     // Struct block
+//     // If we don't put pub keywrod, then it is private by default.
 
-// Implementation block
-impl Server{
-    fn new(addr: String)->Self{
-        Self{
-            addr: addr
-        }
-    }
-    // run takes ownership of entire struct. 
-    // If we pass in &mut self, it won't take ownership.
-    fn run(self){
-        println!("Listening on {}", self.addr)
-    }
-}
+//     pub struct Server{
+//         addr: String,
+//     }
 
-struct Request{
-    // Rust does not support NULL values, but uses enum from Option, from 
-    // standard library. It is a pipe safe way to not encounter no pointer 
-    // exceptions.
-    path: String,
-    query_string: Option<String>,
-    method: String,
-}
+//     // Implementation block
+//     impl Server{
+//         pub fn new(addr: String)->Self{
+//             Self{
+//                 addr: addr
+//             }
+//         }
+//         // run takes ownership of entire struct. 
+//         // If we pass in &mut self, it won't take ownership.
+//        pub fn run(self){
+//             println!("Listening on {}", self.addr)
+//         }
+//     }
+// }
 
-enum Method{
-    GET,
-    DELETE,
-    POST,
-    PUT,
-    HEAD,
-    CONNECT,
-    OPTIONS,
-    TRACE,
-    PATCH,
-}
+// mod http{
+//     pub mod request{
+//         // use super::method::Method;
+//         // pub struct Request{
+//         //     // Rust does not support NULL values, but uses enum from Option, from 
+//         //     // standard library. It is a pipe safe way to not encounter no pointer 
+//         //     // exceptions.
+//         //     path: String,
+//         //     query_string: Option<String>,
+//         //     method: Method,
+//         // }
+//     }
+
+//     // pub mod method{
+//     //     pub enum Method{
+//     //         GET,
+//     //         DELETE,
+//     //         POST,
+//     //         PUT,
+//     //         HEAD,
+//     //         CONNECT,
+//     //         OPTIONS,
+//     //         TRACE,
+//     //         PATCH,
+//     //     }
+//     // }
+// }
