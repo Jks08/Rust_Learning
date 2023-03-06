@@ -1,7 +1,9 @@
 // Struct block
 // If we don't put pub keywrod, then it is private by default.
 use std::net::TcpListener;
+use crate::http::request::Request;
 use std::io::Read;
+use std::convert::TryFrom;
 
 pub struct Server{
     addr: String,
@@ -34,6 +36,12 @@ impl Server{
                     match stream.read(&mut buffer){
                         Ok(_) => {
                             println!("Received Request: {}", String::from_utf8_lossy(&buffer));
+
+                            match Request::try_from(&buffer[..]);{
+                                Ok(request) => {},
+                                Err(e) => println!("Failed to parse a request: {}", e),
+                            }
+                            // let res: &Result<Request, _> = &buffer[..].try_into();
                         }
                         Err(e) => {
                             println!("Failed to read from connection: {}", e);
