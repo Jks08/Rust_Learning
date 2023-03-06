@@ -36,6 +36,7 @@ impl Server{
                     match stream.read(&mut buffer){
                         Ok(_) => {
                             println!("Received Request: {}", String::from_utf8_lossy(&buffer));
+                            // If we use {:?}, it will be debug format, not display.
 
                             match Request::try_from(&buffer[..]);{
                                 Ok(request) => {},
