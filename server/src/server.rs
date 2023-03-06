@@ -38,7 +38,7 @@ impl Server{
                             println!("Received Request: {}", String::from_utf8_lossy(&buffer));
                             // If we use {:?}, it will be debug format, not display.
 
-                            match Request::try_from(&buffer[..]);{
+                            match Request::try_from(&buffer[..]){
                                 Ok(request) => {},
                                 Err(e) => println!("Failed to parse a request: {}", e),
                             }
