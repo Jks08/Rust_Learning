@@ -5,21 +5,21 @@ use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 use std::str;
 use std::str::Utf8Error;
 
-pub struct Request{
+pub struct Request<'buf>{
     // Rust does not support NULL values, but uses enum from Option, from 
     // standard library. It is a pipe safe way to not encounter no pointer 
     // exceptions.
-    path: String,
-    query_string: Option<String>,
+    path: &'buf str,
+    query_string: Option<&'buf str>,
     method: Method,
 }
 
 // Traits are similar to interfaces in other languages.
 // Trait conversion using From trait. 
-impl TryFrom<&[u8]> for Request{
+impl<'buf> TryFrom<&'buf [u8]> for Request<'buf>{
     type Error = ParseError;
 
-    fn try_from(buf: &[u8]) -> Result<Self, Self::Error> {
+    fn try_from(buf: &'buf [u8]) -> Result<Request<'buf>, Self::Error> {
         // match str::from_utf8(buf){
         //     Ok(request) => {},
         //     Err(_) => return Err(ParseError::InvalidEncoding), 
@@ -63,11 +63,15 @@ impl TryFrom<&[u8]> for Request{
         // }
 
         if let Some(i) = path.find('?'){
-            query_string = Some(path[i+1..].to_string());
+            query_string = Some(&path[i+1..]);
             path = &path[..i];
         }
         // ? will try to convert the result to type.
-        unimplemented!()
+        Ok(Self{
+            path: path,
+            query_string,
+            method,
+        })
     }
 }
 
