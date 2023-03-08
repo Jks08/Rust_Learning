@@ -9,6 +9,7 @@ use super::QueryString;
 // Rust does not support NULL values, but uses enum from Option, from 
 // standard library. It is a pipe safe way to not encounter no pointer 
 // exceptions.
+#[derive(Debug)]
 pub struct Request<'buf> {
     path: &'buf str,
     query_string: Option<QueryString<'buf>>,
