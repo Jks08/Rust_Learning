@@ -4,15 +4,17 @@ use std::error::Error;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 use std::str;
 use std::str::Utf8Error;
+use super::QueryString;
 
-pub struct Request<'buf>{
-    // Rust does not support NULL values, but uses enum from Option, from 
-    // standard library. It is a pipe safe way to not encounter no pointer 
-    // exceptions.
+// Rust does not support NULL values, but uses enum from Option, from 
+// standard library. It is a pipe safe way to not encounter no pointer 
+// exceptions.
+pub struct Request<'buf> {
     path: &'buf str,
-    query_string: Option<&'buf str>,
+    query_string: Option<QueryString<'buf>>,
     method: Method,
 }
+
 
 // Traits are similar to interfaces in other languages.
 // Trait conversion using From trait. 
@@ -63,7 +65,7 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf>{
         // }
 
         if let Some(i) = path.find('?'){
-            query_string = Some(&path[i+1..]);
+            query_string = Some(QueryString::from(&path[i+1..]));
             path = &path[..i];
         }
         // ? will try to convert the result to type.
