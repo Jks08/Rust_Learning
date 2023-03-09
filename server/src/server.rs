@@ -1,11 +1,20 @@
 // Struct block
 // If we don't put pub keywrod, then it is private by default.
+use crate::http::{ParseError, Request, Response, StatusCode};
 use std::net::TcpListener;
-use crate::http::request::Request;
-use std::io::Read;
+use std::io::{Write,Read};
 use std::convert::TryFrom;
 
-pub struct Server{
+pub trait Handler {
+    fn handle_request(&mut self, request: &Request) -> Response;
+
+    fn handle_bad_request(&mut self, e: &ParseError) -> Response {
+        println!("Failed to parse request: {}", e);
+        Response::new(StatusCode::BadRequest, None)
+    }
+}
+
+pub struct Server {
     addr: String,
 }
 
@@ -20,7 +29,7 @@ impl Server{
     }
     // run takes ownership of entire struct. 
     // If we pass in &mut self, it won't take ownership.
-    pub fn run(self){
+    pub fn run(self, mut handler: impl Handler){
         println!("Listening on {}", self.addr);
 
         let listener = TcpListener::bind(&self.addr).unwrap(); 
@@ -36,37 +45,21 @@ impl Server{
                     match stream.read(&mut buffer){
                         Ok(_) => {
                             println!("Received Request: {}", String::from_utf8_lossy(&buffer));
-                            // If we use {:?}, it will be debug format, not display.
 
-                            match Request::try_from(&buffer[..]){
-                                Ok(request) => {
-                                    dbg!(request);
-                                },
-                                Err(e) => println!("Failed to parse a request: {}", e),
+                            let response = match Request::try_from(&buffer[..]) {
+                                Ok(request) => handler.handle_request(&request),
+                                Err(e) => handler.handle_bad_request(&e),
+                            };
+
+                            if let Err(e) = response.send(&mut stream) {
+                                println!("Failed to send response: {}", e);
                             }
-                            // let res: &Result<Request, _> = &buffer[..].try_into();
                         }
-                        Err(e) => {
-                            println!("Failed to read from connection: {}", e);
-                        }
+                        Err(e) => println!("Failed to read from connection: {}", e),
                     }
-                    // sample array : 
-                    // let a = [1,2,3,4,5]; // type is [i32;5]
-                    // arr(&a);
                 }
-                Err(e) => {
-                    println!("Connection failed: {}", e);
-                }
+                Err(e) => println!("Failed to establish a connection: {}", e),
             }
-            // let res = listener.accept();
-            // if res.is_err(){
-            //     continue;
-            // }
-
-            // let (stream,addr) = res.unwrap();
-        } // Not the best way to handle enum errors. Match is better.
-
-        // let tup = (5,"a",listener);
-        // (5,"a",listener)
+        }
     }
 }
